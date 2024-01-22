@@ -2,13 +2,19 @@ import React, { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', phone: '040-123456' }
   ])
-  const [newName, setNewName] = useState('')
 
-  const handlePersonChange = (event) => {
-    // Update newName
-    setNewName(event.target.value)
+  const [inputs, setInputs] = useState({
+    name: '',
+    phone: ''
+  })
+
+  const handleInputsChange = (event) => {
+    setInputs({
+      ...inputs,
+      [event.target.name]: event.target.value
+    })
   }
 
   const addPerson = (event) => {
@@ -16,26 +22,30 @@ const App = () => {
     event.preventDefault()
 
     // Prevent insert Names that already exist
-    const nameExists = persons.find(person => person.name === newName)
+    const nameExists = persons.find(person => person.name === inputs.name)
     if (nameExists) {
-      window.alert(`${newName} is already added to phonebook`)
+      window.alert(`${inputs.name} is already added to phonebook`)
       return
     }
     // Prevent insert empty Names
-    if (newName === '') {
+    if (inputs.name === '') {
       window.alert('Name cannot be empty')
       return
     }
 
     // Create newPerson object
     const newPerson = {
-      name: newName
+      name: inputs.name,
+      phone: inputs.phone
     }
 
     // Add newPerson to persons
     setPersons([...persons, newPerson])
     // Reset newName
-    setNewName('')
+    setInputs({
+      name: '',
+      phone: ''
+    })
   }
 
   return (
@@ -43,7 +53,10 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addPerson}>
         <div>
-          name: <input value={newName} onChange={handlePersonChange} />
+          name: <input value={inputs.name} onChange={handleInputsChange} name='name' />
+        </div>
+        <div>
+          number: <input value={inputs.phone} onChange={handleInputsChange} name='phone' />
         </div>
         <div>
           <button type='submit'>add</button>
@@ -52,7 +65,7 @@ const App = () => {
       <h2>Numbers</h2>
       {
         persons.map(person => (
-          <p key={person.name}>{person.name}</p>
+          <p key={person.name}>{person.name} - {person.phone}</p>
         ))
       }
     </div>
