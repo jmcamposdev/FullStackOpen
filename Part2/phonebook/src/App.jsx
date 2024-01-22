@@ -15,6 +15,18 @@ const App = () => {
     // Prevent default form submission
     event.preventDefault()
 
+    // Prevent insert Names that already exist
+    const nameExists = persons.find(person => person.name === newName)
+    if (nameExists) {
+      window.alert(`${newName} is already added to phonebook`)
+      return
+    }
+    // Prevent insert empty Names
+    if (newName === '') {
+      window.alert('Name cannot be empty')
+      return
+    }
+
     // Create newPerson object
     const newPerson = {
       name: newName
