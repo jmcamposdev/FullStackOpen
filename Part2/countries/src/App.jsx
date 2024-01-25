@@ -42,7 +42,7 @@ function App () {
     }
 
     if (count > 1) {
-      return <CountriesList countries={filteredCountries} />
+      return <CountriesList countries={filteredCountries} setFilter={setFilter} />
     }
 
     if (count === 1) {
