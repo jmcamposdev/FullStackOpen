@@ -56,6 +56,9 @@ const App = () => {
       number: inputs.number
     }
 
+    // Add to the DDBB
+    axios.post('http://localhost:3001/persons', newPerson)
+
     // Add newPerson to persons
     setPersons([...persons, newPerson])
     // Reset newName
