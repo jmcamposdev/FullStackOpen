@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
 
   // Set persons state from server
   useEffect(() => {
-    // Get data from server
-    axios.get('http://localhost:3001/persons')
-      .then(response => { // Promise fulfilled
-        // Set persons state
-        setPersons(response.data)
-      })
+    // Get All the Persons
+    personService.getAll().then(initialPersons => setPersons(initialPersons))
   }, [])
 
   const [inputs, setInputs] = useState({
@@ -32,6 +28,18 @@ const App = () => {
       ...inputs,
       [event.target.name]: event.target.value
     })
+  }
+
+  const handlePersonDelete = (id) => {
+    const personToDelete = persons.filter(person => person.id === id)
+    const confirmDelete = window.confirm(`Do you want to delete a ${personToDelete.name}`)
+
+    if (confirmDelete) {
+      personService.deletePerson(id)
+        .then(deletedPerson => {
+          setPersons(persons.filter(person => person.id !== deletedPerson.id))
+        })
+    }
   }
 
   const addPerson = (event) => {
@@ -56,11 +64,12 @@ const App = () => {
       number: inputs.number
     }
 
-    // Add to the DDBB
-    axios.post('http://localhost:3001/persons', newPerson)
+    // Save the New Person
+    personService.create(newPerson)
+      .then(returnedPerson => {
+        setPersons([...persons, returnedPerson])
+      })
 
-    // Add newPerson to persons
-    setPersons([...persons, newPerson])
     // Reset newName
     setInputs({
       ...inputs, // Keep filter
@@ -79,7 +88,7 @@ const App = () => {
       <h2>Add a new</h2>
       <PersonForm nameValue={inputs.name} numberValue={inputs.number} handleInputsChange={handleInputsChange} onSubmitt={addPerson} />
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} handlePersonDelete={handlePersonDelete} />
     </div>
   )
 }
