@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const persons = [
+let persons = [
   {
     "name": "Arto Hellas",
     "number": "040-123456",
@@ -53,7 +53,15 @@ app.get('/api/persons/:id', (request, response) => {
   } else {
     response.status(404).end()
   }
-  
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  // Get id from request
+  const id = Number(request.params.id);
+  // Filter persons array to remove person with id
+  persons = persons.filter(person => person.id !== id);
+  // Return 204 (no content) 
+  response.status(204).end()
 })
 
 
