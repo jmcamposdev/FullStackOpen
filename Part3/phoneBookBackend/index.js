@@ -29,41 +29,41 @@ let persons = [
 ]
 
 app.get('/', (request, response) => {
+  // Send HTML
   response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/info', (request, response) => {
+  // Create HTML
   const html = `
     <p>Phonebook has info for ${persons.length} people</p>
     <p>${new Date}</p>
   `
-
+  // Send HTML
   response.send(html)
 })
 
 app.get('/api/persons', (request, response) => {
+  // Return persons array
   response.json(persons);
 })
 
 app.post('/api/persons', (request, response) => {
   const person = {...request.body, id:generateId()}
-
   // Validate that person has name and number
   if (!person.name || !person.number) {
     // Return 400 (bad request)
     return response.status(400).json({error:"The person must have name and number"})
   }
-
   // Validate that person name is unique
   const nameExists = persons.find(p => p.name === person.name)
   if (nameExists) {
     // Return 400 (bad request)
     return response.status(400).json({error:"The person name must be unique"})
   }
-
   // Add new person
   persons.push(person)
-
+  // Return new person
   response.json(person);
 })
 
@@ -75,8 +75,10 @@ app.get('/api/persons/:id', (request, response) => {
 
   // If person exists, return it, else return 404
   if (person) {
+    // Return person
     response.json(person);
   } else {
+    // Return 404 (not found)
     response.status(404).end()
   }
 })
@@ -91,11 +93,18 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 
+// Start server
 const PORT = 3001
+// Listen to port
 app.listen(PORT, () => {
+  // Print message to console when server is started
   console.log(`Server running on port ${PORT}`)
 })
 
+/**
+ * Generates a random number between 5000 and 10000
+ * @returns Random number between 5000 and 10000
+ */
 function generateId() {
   return Math.floor(Math.random() * (10000 - 5000 + 1) + 5000)
 }
