@@ -257,6 +257,25 @@ tbody tr:hover {
   background-color: #da190b;
 }
 
+.notification {
+  background-color: #555;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: all .4s;
+}
+
+.notification-error {
+  background-color: #f44336;
+}
+
+.notification-success {
+  background-color: #4CAF50;
+}
+
 @media screen and (max-width: 992px) {
   table {
       display:block

@@ -5,9 +5,12 @@ import personService from './services/persons'
 // Styles
 import './normalize.css'
 import './styles.css'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   // Set persons state from server
   useEffect(() => {
@@ -33,14 +36,19 @@ const App = () => {
   }
 
   const handlePersonDelete = (id) => {
-    const personToDelete = persons.filter(person => person.id === id)
+    const personToDelete = persons.filter(person => person.id === id)[0]
     const confirmDelete = window.confirm(`Do you want to delete a ${personToDelete.name}`)
 
     if (confirmDelete) {
       personService.deletePerson(id)
         .then(deletedPerson => {
-          setPersons(persons.filter(person => person.id !== deletedPerson.id))
+          setSuccessMessage(`${deletedPerson.name} was deleted successfully`)
+        }).catch(() => {
+          console.log(personToDelete)
+          setErrorMessage(`${personToDelete.name} was already deleted from server`)
         })
+
+      setPersons(persons.filter(person => person.id !== id))
     }
   }
 
@@ -70,6 +78,7 @@ const App = () => {
     personService.create(newPerson)
       .then(returnedPerson => {
         setPersons([...persons, returnedPerson])
+        setSuccessMessage(`${returnedPerson.name} was added successfully`)
       })
 
     // Reset newName
@@ -83,6 +92,7 @@ const App = () => {
       personService.update(personToUpdate)
         .then(updatedPerson => {
           setPersons(persons.map(person => person.id !== personToUpdate.id ? person : personToUpdate))
+          setSuccessMessage(`${updatedPerson.name} was updated successfully`)
         })
 
       // Reset Form
@@ -105,6 +115,8 @@ const App = () => {
         <div className='container-table100'>
           <div className='wrap-table100'>
             <div className='table100'>
+              <Notification message={errorMessage} type='notification-error' setMessage={setErrorMessage} />
+              <Notification message={successMessage} type='notification-success' setMessage={setSuccessMessage} />
               <div className='form-container'>
                 <div className='column1'>
                   <input type='text' placeholder='Filter Name' value={inputs.filter} onChange={handleInputsChange} name='filter' />
