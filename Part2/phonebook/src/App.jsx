@@ -47,9 +47,9 @@ const App = () => {
     event.preventDefault()
 
     // Prevent insert Names that already exist
-    const nameExists = persons.find(person => person.name === inputs.name)
-    if (nameExists) {
-      window.alert(`${inputs.name} is already added to phonebook`)
+    const personExists = persons.find(person => person.name.toLowerCase() === inputs.name.toLowerCase())
+    if (personExists) {
+      updateNumber({ ...personExists, number: inputs.number })
       return
     }
     // Prevent insert empty Names
@@ -76,6 +76,17 @@ const App = () => {
       name: '',
       number: ''
     })
+  }
+
+  const updateNumber = (personToUpdate) => {
+    const confirmUpdate = window.confirm(`${personToUpdate.name} is already added to phonebook, replace the old number with a new one?`)
+
+    if (confirmUpdate) {
+      personService.update(personToUpdate)
+        .then(updatedPerson => {
+          setPersons(persons.map(person => person.id !== personToUpdate.id ? person : personToUpdate))
+        })
+    }
   }
 
   return (
