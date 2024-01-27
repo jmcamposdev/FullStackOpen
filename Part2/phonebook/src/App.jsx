@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import Filter from './components/Filter'
-import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
+import Person from './components/Person'
 import personService from './services/persons'
+
+// Styles
+import './normalize.css'
+import './styles.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -71,11 +73,7 @@ const App = () => {
       })
 
     // Reset newName
-    setInputs({
-      ...inputs, // Keep filter
-      name: '',
-      number: ''
-    })
+    resetFormInputs()
   }
 
   const updateNumber = (personToUpdate) => {
@@ -86,21 +84,65 @@ const App = () => {
         .then(updatedPerson => {
           setPersons(persons.map(person => person.id !== personToUpdate.id ? person : personToUpdate))
         })
+
+      // Reset Form
+      resetFormInputs()
     }
   }
 
-  return (
-    <div>
-      <h2>Phonebook</h2>
-      <Filter filter={inputs.filter} handleFilterChange={handleInputsChange} inputName='filter' />
-      <br />
-      <br />
+  const resetFormInputs = () => {
+    // Reset newName
+    setInputs({
+      ...inputs, // Keep filter
+      name: '',
+      number: ''
+    })
+  }
 
-      <h2>Add a new</h2>
-      <PersonForm nameValue={inputs.name} numberValue={inputs.number} handleInputsChange={handleInputsChange} onSubmitt={addPerson} />
-      <h2>Numbers</h2>
-      <Persons persons={personsToShow} handlePersonDelete={handlePersonDelete} />
-    </div>
+  return (
+    <>
+      <div className='limiter'>
+        <div className='container-table100'>
+          <div className='wrap-table100'>
+            <div className='table100'>
+              <div className='form-container'>
+                <div className='column1'>
+                  <input type='text' placeholder='Filter Name' value={inputs.filter} onChange={handleInputsChange} name='filter' />
+                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr className='table100-head'>
+                    <th className='column1'>Name</th>
+                    <th className='column2'>Number</th>
+                    <th className='column2'>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                  personsToShow.map(person =>
+                    <Person key={person.name} person={person} handlePersonDelete={handlePersonDelete} />)
+                  }
+                </tbody>
+              </table>
+              <div className='form-container'>
+                <form onSubmit={addPerson}>
+                  <div className='column1'>
+                    <input type='text' onChange={handleInputsChange} value={inputs.name} placeholder='Name' name='name' />
+                  </div>
+                  <div className='column2'>
+                    <input type='number' onChange={handleInputsChange} value={inputs.number} placeholder='Number' name='number' />
+                  </div>
+                  <div className='column2'>
+                    <button className='btn-create'>Create</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
